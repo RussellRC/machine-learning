@@ -3,7 +3,7 @@ import math
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
-import visuals_console as vsc
+#import visuals_console as vsc
 
 class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
@@ -209,7 +209,7 @@ def run():
         Press ESC to close the simulation, or [SPACE] to pause the simulation. """
 
     alpha = 0.25
-    tolerance = 0.5
+    tolerance = .5
     agent_verbose = False
 
 
@@ -256,4 +256,4 @@ def run():
 
 if __name__ == '__main__':
     run()
-    vsc.plot_trials('sim_improved-learning.csv')
+    #vsc.plot_trials('sim_improved-learning.csv')

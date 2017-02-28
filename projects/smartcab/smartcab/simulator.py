@@ -34,7 +34,10 @@ class Simulator(object):
         'gray'    : (155, 155, 155)
     }
 
-    def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False):
+    def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False, verbose_render_text=False):
+        '''TO DO:  Remove this line and verbose_render_text arg'''
+        self.verbose_render_text = verbose_render_text
+        
         self.env = env
         self.size = size if size is not None else ((self.env.grid_size[0] + 1) * self.env.block_size, (self.env.grid_size[1] + 2) * self.env.block_size)
         self.width, self.height = self.size
@@ -183,7 +186,8 @@ class Simulator(object):
                         self.last_updated = self.current_time
                     
                     # Render text
-                    self.render_text(trial, testing)
+                    if self.verbose_render_text:
+                        self.render_text(trial, testing)
 
                     # Render GUI and sleep
                     if self.display:

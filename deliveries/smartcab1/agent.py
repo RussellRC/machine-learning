@@ -3,7 +3,6 @@ import math
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
-import visuals_console as vsc
 
 class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
@@ -49,9 +48,9 @@ class LearningAgent(Agent):
         else:
             self.n_train_trials = self.n_train_trials + 1
             #self.epsilon = (self.epsilon-0.05)
-            #self.epsilon = (self.epsilon-0.001)  # Train a thousand times independent of alpha 
+            #self.epsilon = math.exp(-.2*self.n_train_trials)
             #self.epsilon = math.cos(-.1*self.alpha*self.n_train_trials)
-            self.epsilon = math.exp(-.01*self.alpha*self.n_train_trials)
+            self.epsilon = math.exp(-.2*self.alpha*self.n_train_trials)
 
         if self.epsilon < 0:
             self.epsilon = 0
@@ -61,7 +60,6 @@ class LearningAgent(Agent):
         if self.verbose:
                 print "self.epsilon: '{}'".format(self.epsilon)
                 print "self.n_train_trials: '{}'".format(self.n_train_trials)
-                print "self.Q \n", self.Q
             
         return None
 
@@ -79,11 +77,8 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent
-        
-        self.whole_state = (waypoint, inputs['light'], inputs['left'], inputs['right'], inputs['oncoming'])
-        state = self.whole_state
-        ''' Reduced feature space '''
-        state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
+        #state = (waypoint, inputs['light'], inputs['left'], inputs['right'], inputs['oncoming'])
+        state = (waypoint, inputs['light'])
 
         return state
 
@@ -107,13 +102,14 @@ class LearningAgent(Agent):
         """ Get the action with maximum Q-value 
         of all actions based on the 'state' the smartcab is in. """
 
-        maxQ_actions = []
-        maxQ_value = self.get_maxQ(state)
-        for action, q_value in self.Q[state].items():
-            if (q_value == maxQ_value):
-                maxQ_actions.append(action)
+        maxQ_action = None
+        maxQ_value = None
+        if state in self.Q:
+            for action, q_value in self.Q[state].items():
+                if (q_value > maxQ_value):
+                    maxQ_action = action
+                    maxQ_value = q_value
         
-        maxQ_action = random.choice(maxQ_actions[0:])
         if self.verbose:
             print "Taking max action '{}' with value '{}'".format(maxQ_action, maxQ_value)
         
@@ -158,11 +154,11 @@ class LearningAgent(Agent):
             if rand < self.epsilon:
                 action = random.choice(self.valid_actions[0:])
                 if self.verbose:
-                    print "took random action '{}' for state '{}' with r={:.4f} and epsilon={:.4f}".format(action, state, rand, self.epsilon)
+                    print "took random action '{}' with r={} and epsilon={}".format(action, rand, self.epsilon)
             else:
                 action = self.get_maxQ_action(state)
                 if self.verbose:
-                    print "took maxQ action '{}' for state '{}' with r={:.4f} and epsilon={:.4f}".format(action, state, rand, self.epsilon)
+                    print "took maxQ action '{}' with r={} and epsilon={}".format(action, rand, self.epsilon)
         else:
             action = random.choice(self.valid_actions[0:])
  
@@ -180,13 +176,20 @@ class LearningAgent(Agent):
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
         if self.learning:
-            # alpha_reward = self.alpha * (reward + (gamma * self.get_maxQ(state)))
-            ''' since we are using gamma=0 for the agent, lookup of max(Q(s',a')) doesn't matter, so line above becomes line below '''
-            alpha_reward = self.alpha * reward
-            prev_reward = self.Q[state][action]
-            self.Q[state][action] = ((1 - self.alpha)*prev_reward) + alpha_reward
-            if self.verbose:
-                print "updated self.Q[{}][{}] with '{:.4f}', previous was '{:.4f}'".format(state, action, self.Q[state][action], prev_reward)
+            if state in self.Q:
+                if action in self.Q[state]:
+                    prev_reward = self.Q[state][action]
+                    alpha_reward = self.alpha * (reward + self.get_maxQ(state))
+                    self.Q[state][action] = ((1 - self.alpha)*prev_reward) + alpha_reward
+                else:
+                    # Sanity check -- shouldn't happen because createQ() inits the dict
+                    self.Q[state][action] = reward
+            else:
+                # Sanity check -- shouldn't happen because createQ() inits the dict
+                action_reward_dict = dict()
+                action_reward_dict[action] = reward
+                self.Q[state]= action_reward_dict
+
         return
 
 
@@ -208,11 +211,6 @@ def run():
     """ Driving function for running the simulation. 
         Press ESC to close the simulation, or [SPACE] to pause the simulation. """
 
-    alpha = 0.25
-    tolerance = 0.5
-    agent_verbose = False
-
-
     ##############
     # Create the environment
     # Flags:
@@ -227,7 +225,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=alpha, verbose=agent_verbose)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.85, verbose=True)
     
     ##############
     # Follow the driving agent
@@ -251,9 +249,8 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(tolerance=tolerance, n_test=50)
+    sim.run(tolerance=0.05, n_test=80)
 
 
 if __name__ == '__main__':
     run()
-    vsc.plot_trials('sim_improved-learning.csv')

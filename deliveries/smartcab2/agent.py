@@ -3,7 +3,7 @@ import math
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
-import visuals_console as vsc
+#import visuals_console as vsc
 
 class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
@@ -82,8 +82,8 @@ class LearningAgent(Agent):
         
         self.whole_state = (waypoint, inputs['light'], inputs['left'], inputs['right'], inputs['oncoming'])
         state = self.whole_state
-        ''' Reduced feature space '''
-        state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
+        ''' Tried with reduced feature space '''
+        #state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
 
         return state
 
@@ -107,13 +107,14 @@ class LearningAgent(Agent):
         """ Get the action with maximum Q-value 
         of all actions based on the 'state' the smartcab is in. """
 
-        maxQ_actions = []
-        maxQ_value = self.get_maxQ(state)
-        for action, q_value in self.Q[state].items():
-            if (q_value == maxQ_value):
-                maxQ_actions.append(action)
+        maxQ_action = None
+        maxQ_value = None
+        if state in self.Q:
+            for action, q_value in self.Q[state].items():
+                if (q_value > maxQ_value):
+                    maxQ_action = action
+                    maxQ_value = q_value
         
-        maxQ_action = random.choice(maxQ_actions[0:])
         if self.verbose:
             print "Taking max action '{}' with value '{}'".format(maxQ_action, maxQ_value)
         
@@ -180,13 +181,13 @@ class LearningAgent(Agent):
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
         if self.learning:
-            # alpha_reward = self.alpha * (reward + (gamma * self.get_maxQ(state)))
-            ''' since we are using gamma=0 for the agent, lookup of max(Q(s',a')) doesn't matter, so line above becomes line below '''
-            alpha_reward = self.alpha * reward
-            prev_reward = self.Q[state][action]
-            self.Q[state][action] = ((1 - self.alpha)*prev_reward) + alpha_reward
-            if self.verbose:
-                print "updated self.Q[{}][{}] with '{:.4f}', previous was '{:.4f}'".format(state, action, self.Q[state][action], prev_reward)
+            if state in self.Q:
+                if action in self.Q[state]:
+                    prev_reward = self.Q[state][action]
+                    alpha_reward = self.alpha * (reward + self.get_maxQ(state))
+                    self.Q[state][action] = ((1 - self.alpha)*prev_reward) + alpha_reward
+                    if self.verbose:
+                        print "updated self.Q[{}][{}] with '{:.4f}', previous was '{:.4f}'".format(state, action, self.Q[state][action], prev_reward)
         return
 
 
@@ -209,7 +210,7 @@ def run():
         Press ESC to close the simulation, or [SPACE] to pause the simulation. """
 
     alpha = 0.25
-    tolerance = 0.5
+    tolerance = .05
     agent_verbose = False
 
 
@@ -256,4 +257,4 @@ def run():
 
 if __name__ == '__main__':
     run()
-    vsc.plot_trials('sim_improved-learning.csv')
+    #vsc.plot_trials('sim_improved-learning.csv')
