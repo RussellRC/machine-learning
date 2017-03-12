@@ -1,3 +1,9 @@
+# Specific files
+*.zip
+*.tar.gz
+
+
+
 # Mac OS
 .DS_Store
 
