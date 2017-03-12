@@ -3,6 +3,9 @@
 *.tar
 *.gz
 *.tgz
+notMNIST_large/
+notMNIST_small/
+*.pickle
 cifar-10-batches-py/
 
 
