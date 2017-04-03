@@ -23,7 +23,7 @@ sample_id = 5
 
 
 pixel_depth = 255.0
-mean = 0.5
+mean = 0.0
 
 
 
@@ -41,7 +41,7 @@ def normalize(x):
         
     return x_norm
 
-#tests.test_normalize(normalize)
+tests.test_normalize(normalize)
 
 
 
@@ -59,12 +59,11 @@ def one_hot_encode(x):
         label_binarizer.fit(x)
     return label_binarizer.transform(x)
 
-#tests.test_one_hot_encode(one_hot_encode)
+tests.test_one_hot_encode(one_hot_encode)
 
 
 import pickle
 import problem_unittests as tests
-import helper
 
 # Load the Preprocessed Validation data
 valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
@@ -119,7 +118,7 @@ def conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ks
     
     inputs_dim = int(x_tensor.get_shape()[-1])
     weights = tf.Variable(tf.truncated_normal([conv_ksize[0], conv_ksize[1], inputs_dim, conv_num_outputs], mean, seed=42))
-    bias = tf.Variable(tf.zeros(conv_num_outputs))
+    bias = tf.Variable(tf.truncated_normal([conv_num_outputs], seed=42))
     
     x = tf.nn.conv2d(x_tensor, weights, strides=[1, conv_strides[0], conv_strides[1], 1], padding='SAME')
     x = tf.nn.bias_add(x, bias)
@@ -161,7 +160,7 @@ def fully_conn(x_tensor, num_outputs):
     """
     d1 = int(x_tensor.get_shape().as_list()[1])
     weights = tf.Variable(tf.truncated_normal([d1, num_outputs], mean, seed=42))
-    biases = tf.Variable(tf.truncated_normal([num_outputs], mean, seed=42))
+    biases = tf.Variable(tf.truncated_normal([num_outputs] , seed=42))
                           
     x = tf.add(tf.matmul(x_tensor, weights), biases)
     x = tf.nn.relu(x)
@@ -180,7 +179,7 @@ def output(x_tensor, num_outputs):
     """
     d1 = int(x_tensor.get_shape().as_list()[1])
     weights = tf.Variable(tf.truncated_normal([d1, num_outputs], mean, seed=42))
-    biases = tf.Variable(tf.truncated_normal([num_outputs], mean, seed=42))
+    biases = tf.Variable(tf.truncated_normal([num_outputs] , seed=42))
     
     out = tf.add(tf.matmul(x_tensor, weights), biases)
     return out
@@ -199,9 +198,9 @@ def conv_net(x, keep_prob):
     #    Play around with different number of outputs, kernel size and stride
     # Function Definition from Above:
     #    conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ksize, pool_strides)
-    conv1 = conv2d_maxpool(x, 36, (2, 2), (1, 1), (2, 2), (2, 2))
-    conv2 = conv2d_maxpool(conv1, 64, (2, 2), (1, 1), (2, 2), (2, 2))
-    conv3 = conv2d_maxpool(conv2, 128, (2, 2), (1, 1), (2, 2), (2, 2))
+    conv1 = conv2d_maxpool(x, 32, (3, 3), (1, 1), (2, 2), (2, 2))
+    conv2 = conv2d_maxpool(conv1, 128, (3, 3), (1, 1), (2, 2), (2, 2))
+    conv3 = conv2d_maxpool(conv2, 512, (3, 3), (1, 1), (2, 2), (2, 2))
 
     # TODO: Apply a Flatten Layer
     # Function Definition from Above:
@@ -298,12 +297,12 @@ def print_stats(session, feature_batch, label_batch, cost, accuracy):
         y: valid_labels,
         keep_prob: 1.0})
     
-    print('Loss: {:>10.4f} Validation Accuracy: {:.6f}'.format(loss, valid_acc))
+    print('Loss: {:>10.4f} || Validation Accuracy: {:.6f}'.format(loss, valid_acc))
 
 
 epochs = 15
 batch_size = 1024
-keep_probability = 0.8
+keep_probability = 0.75
 
 print('Checking the Training on a Single Batch...')
 with tf.Session() as sess:
