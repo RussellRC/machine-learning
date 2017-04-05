@@ -1,6 +1,7 @@
+
 import matplotlib.pyplot as plt
 
-from urllib import urlretrieve
+from urllib.request import urlretrieve
 from os.path import isfile, isdir
 from tqdm import tqdm
 import problem_unittests as tests
@@ -11,7 +12,7 @@ cifar10_dataset_folder_path = 'cifar-10-batches-py'
 
 
 
-import helper2 as helper
+import helper as helper
 import numpy as np
 
 # Explore the dataset
@@ -24,6 +25,7 @@ sample_id = 5
 
 pixel_depth = 255.0
 mean = 0.0
+stddev = 0.1
 
 
 
@@ -117,8 +119,8 @@ def conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ks
     """
     
     inputs_dim = int(x_tensor.get_shape()[-1])
-    weights = tf.Variable(tf.truncated_normal([conv_ksize[0], conv_ksize[1], inputs_dim, conv_num_outputs], mean, seed=42))
-    bias = tf.Variable(tf.truncated_normal([conv_num_outputs], seed=42))
+    weights = tf.Variable(tf.truncated_normal([conv_ksize[0], conv_ksize[1], inputs_dim, conv_num_outputs], mean, stddev, seed=42))
+    bias = tf.Variable(tf.zeros([conv_num_outputs]))
     
     x = tf.nn.conv2d(x_tensor, weights, strides=[1, conv_strides[0], conv_strides[1], 1], padding='SAME')
     x = tf.nn.bias_add(x, bias)
@@ -159,8 +161,8 @@ def fully_conn(x_tensor, num_outputs):
     : return: A 2-D tensor where the second dimension is num_outputs.
     """
     d1 = int(x_tensor.get_shape().as_list()[1])
-    weights = tf.Variable(tf.truncated_normal([d1, num_outputs], mean, seed=42))
-    biases = tf.Variable(tf.truncated_normal([num_outputs] , seed=42))
+    weights = tf.Variable(tf.truncated_normal([d1, num_outputs], mean, stddev, seed=42))
+    biases = tf.Variable(tf.zeros([num_outputs]))
                           
     x = tf.add(tf.matmul(x_tensor, weights), biases)
     x = tf.nn.relu(x)
@@ -178,8 +180,8 @@ def output(x_tensor, num_outputs):
     : return: A 2-D tensor where the second dimension is num_outputs.
     """
     d1 = int(x_tensor.get_shape().as_list()[1])
-    weights = tf.Variable(tf.truncated_normal([d1, num_outputs], mean, seed=42))
-    biases = tf.Variable(tf.truncated_normal([num_outputs] , seed=42))
+    weights = tf.Variable(tf.truncated_normal([d1, num_outputs], mean, stddev, seed=42))
+    biases = tf.Variable(tf.zeros([num_outputs]))
     
     out = tf.add(tf.matmul(x_tensor, weights), biases)
     return out
@@ -198,9 +200,12 @@ def conv_net(x, keep_prob):
     #    Play around with different number of outputs, kernel size and stride
     # Function Definition from Above:
     #    conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ksize, pool_strides)
-    conv1 = conv2d_maxpool(x, 32, (2, 2), (1, 1), (2, 2), (2, 2))
-    conv2 = conv2d_maxpool(conv1, 64, (2, 2), (1, 1), (2, 2), (2, 2))
-    conv3 = conv2d_maxpool(conv2, 128, (3, 3), (1, 1), (2, 2), (2, 2))
+    conv1 = conv2d_maxpool(x, 32, (3, 3), (1, 1), (2, 2), (2, 2))
+    conv1 = tf.nn.dropout(conv1, keep_prob)
+    conv2 = conv2d_maxpool(conv1, 64, (3, 3), (1, 1), (2, 2), (2, 2))
+    conv2 = tf.nn.dropout(conv2, keep_prob)
+    conv3 = conv2d_maxpool(conv2, 96, (2, 2), (2, 2), (2, 2), (2, 2))
+    conv3 = tf.nn.dropout(conv3, keep_prob)
 
     # TODO: Apply a Flatten Layer
     # Function Definition from Above:
@@ -213,16 +218,16 @@ def conv_net(x, keep_prob):
     #   fully_conn(x_tensor, num_outputs)
     fc1 = fully_conn(flat, 1024)
     fc1 = tf.nn.dropout(fc1, keep_prob)
-    fc2 = fully_conn(fc1, 2048)
+    fc2 = fully_conn(fc1, 1024)
     fc2 = tf.nn.dropout(fc2, keep_prob)
-    fc3 = fully_conn(fc2, 4096)
-    fc3 = tf.nn.dropout(fc3, keep_prob)
+    #fc3 = fully_conn(fc2, 4096)
+    #fc3 = tf.nn.dropout(fc3, keep_prob)
     
     # TODO: Apply an Output Layer
     #    Set this to the number of classes
     # Function Definition from Above:
     #   output(x_tensor, num_outputs)
-    out = output(fc3, 10)
+    out = output(fc1, 10)
     
     # TODO: return output
     return out
@@ -300,8 +305,8 @@ def print_stats(session, feature_batch, label_batch, cost, accuracy):
     print('Loss: {:>10.4f} || Validation Accuracy: {:.6f}'.format(loss, valid_acc))
 
 
-epochs = 15
-batch_size = 1024
+epochs = 40
+batch_size = 64
 keep_probability = 0.75
 
 print('Checking the Training on a Single Batch...')
