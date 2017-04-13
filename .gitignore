@@ -7,7 +7,10 @@ notMNIST_large/
 notMNIST_small/
 *.pickle
 cifar-10-batches-py/
-
+image_classification.data-00000-of-00001
+*.index
+*.meta
+*.p
 
 # Mac OS
 .DS_Store
