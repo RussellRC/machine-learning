@@ -1,0 +1,71 @@
+svr = SVC(kernel="rbf", C=100000.0)
+accuracy:  0.863636363636
+recall:  0.375
+precision:  0.75
+f1:  0.5
+
+svr = SVC(kernel="rbf", C=100000.0, class_weight="balanced")
+accuracy:  0.613636363636
+recall:  0.5
+precision:  0.235294117647
+f1:  0.32
+
+##########
+
+Pipeline(steps=[('scaler', MinMaxScaler(copy=True, feature_range=(0, 1))), ('pca', PCA(copy=True, iterated_power='auto', n_components=4, random_state=None,
+  svd_solver='auto', tol=0.0, whiten=False)), ('svr', SVC(C=100000.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False))])
+	Accuracy: 0.85033	Precision: 0.36095	Recall: 0.15900	F1: 0.22076	F2: 0.17903
+	Total predictions: 15000	True positives:  318	False positives:  563	False negatives: 1682	True negatives: 12437
+
+##########
+
+Pipeline(steps=[('scaler', MinMaxScaler(copy=True, feature_range=(0, 1))), ('pca', PCA(copy=True, iterated_power='auto', n_components=8, random_state=None,
+  svd_solver='auto', tol=0.0, whiten=False)), ('svr', SVC(C=100000.0, cache_size=200, class_weight='balanced', coef0=0.0,
+  decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False))])
+	Accuracy: 0.73660	Precision: 0.20502	Recall: 0.33900	F1: 0.25551	F2: 0.29981
+	Total predictions: 15000	True positives:  678	False positives: 2629	False negatives: 1322	True negatives: 10371
+
+##########
+
+Pipeline(steps=[('scaler', MinMaxScaler(copy=True, feature_range=(0, 1))), ('pca', PCA(copy=True, iterated_power='auto', n_components=5, random_state=None,
+  svd_solver='auto', tol=0.0, whiten=False)), ('svr', SVC(C=100000.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False))])
+	Accuracy: 0.83253	Precision: 0.29187	Recall: 0.17950	F1: 0.22229	F2: 0.19447
+	Total predictions: 15000	True positives:  359	False positives:  871	False negatives: 1641	True negatives: 12129
+
+##########
+  
+Pipeline(steps=[('scaler', MinMaxScaler(copy=True, feature_range=(0, 1))), ('pca', PCA(copy=True, iterated_power='auto', n_components=6, random_state=None,
+  svd_solver='auto', tol=0.0, whiten=False)), ('svr', SVC(C=100000.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False))])
+	Accuracy: 0.82573	Precision: 0.27882	Recall: 0.19350	F1: 0.22845	F2: 0.20611
+	Total predictions: 15000	True positives:  387	False positives: 1001	False negatives: 1613	True negatives: 11999
+
+##########
+
+Pipeline(steps=[('scaler', MinMaxScaler(copy=True, feature_range=(0, 1))), ('pca', PCA(copy=True, iterated_power='auto', n_components=7, random_state=None,
+  svd_solver='auto', tol=0.0, whiten=False)), ('svr', SVC(C=100000.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False))])
+	Accuracy: 0.81580	Precision: 0.26609	Recall: 0.21700	F1: 0.23905	F2: 0.22531
+	Total predictions: 15000	True positives:  434	False positives: 1197	False negatives: 1566	True negatives: 11803
+
+##########
+  
+Pipeline(steps=[('scaler', MinMaxScaler(copy=True, feature_range=(0, 1))), ('pca', PCA(copy=True, iterated_power='auto', n_components=8, random_state=None,
+  svd_solver='auto', tol=0.0, whiten=False)), ('svr', SVC(C=100000.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=None, degree=3, gamma='auto', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False))])
+	Accuracy: 0.80960	Precision: 0.25174	Recall: 0.21700	F1: 0.23308	F2: 0.22316
+	Total predictions: 15000	True positives:  434	False positives: 1290	False negatives: 1566	True negatives: 11710

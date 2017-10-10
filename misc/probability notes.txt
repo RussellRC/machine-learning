@@ -1,0 +1,72 @@
+P(chris) = .5
+P(sara) = .5
+
+P("love deal", chris) = .1 * .8 * .5 = .04
+P("love deal", sara) = .5 * .2 * .5 =  .05
+
+norm = .09
+
+p(chris | "love deal") = .04 / .09 = .44
+p(sara, "love deal") = .05 / .09 = .55
+
+p(love deal, chris) = .1 * .8 * .5 = .04
+p(love deal, sara) = .5 * .2 * .5 = .05
+p(ld, cs) = .09
+
+
+P(a,b) = P(a|b)P(b)
+P(a,b) = P(b|a)P(a)
+-->
+P(A|B) = P(B|A)*P(A)/P(B)
+P(b|a) = P(a|b)P(b) / P(a)
+
+
+P(t, l) = .20 / .25 = .8
+
+P(a certain word|surrounding words) = P(surrounding words|a certain word)*P(a certain word) / P(surrounding words)
+
+So if you could just go ahead and pack up your stuff and move it down there, that would be terrific, OK?
+
+for this time = .4 * .6 = .24
+for this job = .4 * .4 = .16
+for that job = .3 * .8 = .24
+for that time = .3 * .2 = .06
+for those items = .3 * .1 = .3
+
+time = .3
+job = .4
+
+
+
+###################
+
+Accuracy: Number of correct predictions made divided by the total number of predictions made, multiplied by 100 to turn it into a percentage
+
+Recall: True Positive / (True Positive + False Negative). Out of all the items that are truly positive, how many were correctly classified as positive. Or simply, how many positive items were 'recalled' from the dataset.
+
+Precision: True Positive / (True Positive + False Positive). Out of all the items labeled as positive, how many truly belong to the positive class.
+
+The F1 score can be interpreted as a weighted average of the precision and recall, where an F1 score reaches its best value at 1 and worst at 0:
+
+F1 = 2 * (precision * recall) / (precision + recall)
+
+###################
+
+mode:  value with highest frequency
+median:  value in the middle
+avg:  avg
+
+when uniform distribution, there can be no mode
+there can be multi-modal distributions
+the mode occurs on the X-axis
+mode can be a category as well as a numerical
+
+mean can be misleading due to outliers
+median is robust, is not affected much by departures of the norm
+
+mean, median, mode => measures of center
+
+https://docs.google.com/document/d/1ZGXA1LPK9hhW8ZCRv2KENpJBDvr9EoBOaIlXgYkubS4/edit
+
+Outlier < Q1 - 1.5(IQR)
+Outlier > Q3 + 1.5(IQR)
