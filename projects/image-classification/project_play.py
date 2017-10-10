@@ -115,6 +115,7 @@ def conv2d_maxpool(x_tensor, conv_num_outputs, conv_ksize, conv_strides, pool_ks
     :param pool_strides: Stride 2-D Tuple for pool
     : return: A tensor that represents convolution and max pooling of x_tensor
     """
+    print "conv2d_maxpool - x_tensor.shape: ", x_tensor.get_shape().as_list()
     
     inputs_dim = int(x_tensor.get_shape()[-1])
     weights = tf.Variable(tf.truncated_normal([conv_ksize[0], conv_ksize[1], inputs_dim, conv_num_outputs], mean, seed=42))
